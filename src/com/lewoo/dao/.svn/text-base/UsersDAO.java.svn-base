@@ -1,0 +1,68 @@
+package com.lewoo.dao;
+
+import java.util.List;
+
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
+import com.lewoo.bean.Users;
+
+public class UsersDAO extends HibernateDaoSupport {
+	
+	/**
+	 * ��½��֤
+	 */
+	public boolean login(Users userForm){
+		String hql="from Users where UName=? and UPwd=?";
+		Object[] values={userForm.getUName(),userForm.getUPwd()};
+		List results=getHibernateTemplate().find(hql, values);
+		if(results.isEmpty()){
+			return false;
+		} else{
+			return true;
+		}
+	}
+	
+	/**
+	 * ����ȫ����Ϣ
+	 */
+	public List findAll(){
+		return getHibernateTemplate().find("from Users");
+	}
+	
+	
+	/**
+	 * ���
+	 */
+	public void add(Users user){
+		getHibernateTemplate().save(user);
+	}
+	
+	/**
+	 * ��userId��ѯ
+	 * @param userId
+	 * @return
+	 */
+	public Users getById(int userId){
+		return getHibernateTemplate().get(Users.class, userId);
+	}
+	
+	/**
+	 * ɾ��
+	 */
+	public void delete(int userId){
+		Users user=getById(userId);
+		if(null!=user){
+			getHibernateTemplate().delete(user);
+		}
+	}
+	
+	/**
+	 * �޸�
+	 */
+	public void update(Users user){
+			getHibernateTemplate().update(user);
+	}
+	
+	
+	
+}

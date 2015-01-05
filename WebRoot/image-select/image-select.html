@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<?XML:NAMESPACE PREFIX="mycontrol" ?>
+<?IMPORT NAMESPACE="mycontrol" IMPLEMENTATION="image-select.htc" ?>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>无标题文档</title>
+<link rel="StyleSheet" href="image-select.css" type="text/css" />
+<script language="JavaScript">
+	function aa() {
+		alert(document.all.imageSelect1.GetAllDataXML().xml);
+	}
+	
+	function aaa() {
+		alert(document.all.imageSelect1.GetAllDataXML().xml);
+	}
+</script>
+</head>
+
+<body>
+	<table width="400">
+		<tr>
+			<td width="100%">
+				<mycontrol:image-select onSelectChange="aaa();" tdisabled="f"  width="400" name="imageSelect1" imgsrc="image.gif" id="imageSelect1">
+					<mycontrol:option>测试数据一</mycontrol:option>
+					<mycontrol:option selected='true'>测试数据二</mycontrol:option>
+					<mycontrol:option>测试数据三</mycontrol:option>
+					<mycontrol:option>测试数据四</mycontrol:option>
+					<mycontrol:option value="5">测试数据五</mycontrol:option>
+					<mycontrol:option>测试数据一</mycontrol:option>
+					<mycontrol:option selected='true'>测试数据二</mycontrol:option>
+					<mycontrol:option>测试数据三</mycontrol:option>
+					<mycontrol:option>测试数据四</mycontrol:option>
+					<mycontrol:option value="5">测试数据五</mycontrol:option>
+					<mycontrol:option value="5">测试数据五</mycontrol:option>
+				</mycontrol:image-select>
+			</td>
+		</tr>
+	</table>
+	
+</body>
+<input type="button" value="test" onClick="aa();" />
+<script language="JavaScript">
+	var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
+	xmlDoc.load("data1.xml");
+	var rootElement = xmlDoc.documentElement;
+	//document.all.imageSelect1.disabled="f"
+	//document.all.imageSelect1.dataXML = rootElement.xml;
+</script>
+
+</html>

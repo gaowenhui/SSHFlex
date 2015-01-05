@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+	
+	<struts> 
+	
+	<constant name="struts.objectFactory" value="spring"/>
+	
+	 <package name="action" extends="struts-default">
+	   <action name="user" class="userAction">
+	     <result name="succ">/list.jsp</result>
+	     <!--
+	     <result name="succ">/SSH2-debug/list.html</result>
+	     -->
+	     <result name="fail">/login.jsp</result>
+	     <result name="regSucc">/regSucc.jsp</result>
+	     <result name="updatePasswordSucc">/updatePasswordSucc.jsp</result>
+	   </action>
+
+	 </package>
+
+	</struts>
+	
+	
+	
+	

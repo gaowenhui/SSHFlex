@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   creationComplete="init()"
+			   minWidth="955" minHeight="600">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+		import mx.collections.ArrayCollection;
+		import mx.controls.Alert;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		import mx.rpc.http.HTTPService;
+		
+		[Bindable]
+		private var selectResponse:String= null;
+		[Bindable]
+		private var arraylist:ArrayCollection = new ArrayCollection([
+		{name:"CN",data:"中文"},
+		{name:"US",data:"英文"},
+		]);
+		private function init():void{
+		// fService.addEventListener(ResultEvent.RESULT,successhandler);
+		// fService.addEventListener(FaultEvent.FAULT,faulthandler);
+		}
+		private function dropdownlistChangeHandler(event:Event = null):void{
+		var httpservice:HTTPService = new HTTPService();
+		httpservice.resultFormat = "text";
+		httpservice.url = "http://localhost:8089/SSH2/flexServlet";
+		httpservice.method = "POST";
+		var param:Object = new Object;
+		param.selects = select.selectedItem.data;
+		httpservice.send(param);
+		httpservice.addEventListener(ResultEvent.RESULT,successhandler);
+		// fService.sendRequest(select.selectedItem.data);
+		// Alert.show(select.selectedItem.data);
+		}
+		private function successhandler(event:ResultEvent):void{
+		selectResponse = event.message.body.toString();
+		languages.text = selectResponse;
+		// Alert.show(selectResponse);
+		}
+		// private function faulthandler(event:FaultEvent):void{
+		// selectResponse = event.message.toString();
+		// languages.text = selectResponse;
+		// }
+		]]>
+	</fx:Script>
+	<s:DropDownList x="109" y="66" id="select" labelField="name" dataProvider="{this.arraylist}" change="dropdownlistChangeHandler(event)">
+	</s:DropDownList>
+	<mx:Text id="languages" text="{selectResponse}" x="288" y="198"/>
+</s:Application>

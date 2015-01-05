@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexProperties enableServiceManager="false" flexServerFeatures="4" flexServerType="2" serverContextRoot="/SSH2" serverRoot="D:/Program Files/Apache Software Foundation/tomcat6/webapps/SSH2" serverRootURL="http://localhost:8089/SSH2" toolCompile="true" useServerFlexSDK="false" version="2"/>

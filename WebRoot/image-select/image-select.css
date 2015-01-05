@@ -1,0 +1,33 @@
+﻿/* CSS Document */
+.imageSelect_list_table {
+	font-size:9pt;
+	cursor:default;
+	border:1px solid #666666;
+	background-color : #FFFFFF;
+	color: #24496F;
+}
+
+.imageSelect_list_table_over {
+	background-color: highlight;
+	color: #FFFFFF;
+	cursor: default;
+}
+
+.imageSelect_list_table_out {
+	background-color: #FFFFFF;
+	color: #24496F;
+}
+
+.imageSelect_disp_div {
+	height: 17;
+	cursor: default;
+	color: #24496F;
+	font-size: 10pt;
+	background-color: #FFFFFF;
+}
+
+.imageSelect_dropDown_table {
+	display:inline;
+	cursor:default;
+	background-color: #DBD8D1;
+}

@@ -1,0 +1,16 @@
+SSH2的整合
+(1)配置数据库
+(2)配置数据库透视图
+(3)建立web工程
+(4)加载spring和hibernate框架
+(5)翻转生成数据库bean，以及生成DAO和SERVICE操作,都需要实现spring的注入
+(6)加载struts2，注意此时必须加载spring的插件包,实现struts2的配置
+(7)实现struts2和spring的整合配置。更改struts.xml，将bean工厂的管理交给spring
+<constant name="struts.objectFactory" value="spring"/>
+(8)创建视图jsp
+(9)创建action，使用hibernate生成的bean，采用模型驱动的action.
+注意：声明service对应的变量，以便于实现注入。
+将action注入到spring中。
+第一步：在struts.xml中进行action的配置。注意action的class不再是action
+的物理地址。而是在spring中别名。
+第二步：将action注入到spring

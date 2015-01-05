@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				   xmlns:s="library://ns.adobe.com/flex/spark" 
+				   xmlns:mx="library://ns.adobe.com/flex/mx"
+				   xmlns:control="com.control.*" 
+				   creationComplete="creationCompleteHandle()"
+				   minWidth="955" minHeight="600">
+		
+		
+		<fx:Style>
+			Application{
+				fontSize:12;
+			}
+		</fx:Style>
+		<fx:Declarations>
+			<s:RemoteObject id="findData" destination="findData" result="findDate_resultHandler(event)"/>
+		</fx:Declarations>
+		
+		<fx:Script>
+			<![CDATA[
+				/* import com.adobe.serialization.json.JSON; */
+				
+				import mx.collections.ArrayCollection;
+				import mx.controls.Alert;
+				import mx.rpc.events.FaultEvent;
+				import mx.rpc.events.ResultEvent;
+				
+				private var pageIndex:int=0;
+				
+				private var pageSize:int=5;
+				
+				private function creationCompleteHandle():void{
+					var orgData:ArrayCollection = new ArrayCollection();
+					for( var x:uint = 1; x <= 555; x++ )
+					{
+						var obj:Object = new Object();
+						obj.ID = "id " + x.toString();
+						obj.Code="order "+x;
+						obj.Total=x*1000;
+						obj.Customer= "customer "+x;
+						obj.Register = "employee";
+						obj.Memo="memo "+x;	            	
+						obj.State="auditing state";	            	
+						orgData.addItem(obj);
+					}
+					clientPagingBar1.dataGrid=DataGrid1;
+					clientPagingBar1.orgData=orgData;
+					clientPagingBar1.dataBind();
+					
+					
+					findData.findData();
+				}
+				
+				protected function findDate_resultHandler(event:ResultEvent):void
+				{
+					var rawData:String = String(event.result);  
+					//decode the data to ActionScript using the JSON API  
+					//in this case, the JSON data is a serialize Array of Objects.
+					
+					var arr:Array = (JSON.parse(rawData) as Array);  
+					var dataArray:ArrayCollection = new ArrayCollection(arr); 
+					//Alert.show(dataArray.getItemAt(0).id);
+					clientPagingBar2.dataGrid=DataGrid2;
+					clientPagingBar2.orgData=dataArray;
+					clientPagingBar2.dataBind();
+				} 
+				
+				
+				
+				
+			]]>
+		</fx:Script>
+		
+		<mx:VBox>		
+			<mx:Label text="客户端分页" />
+			<mx:Canvas backgroundColor="white">
+				<mx:VBox width="100%" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+					<mx:DataGrid id="DataGrid1" verticalScrollPolicy="on" horizontalScrollPolicy="off">
+						<mx:columns>
+							<mx:DataGridColumn headerText="订单ID" dataField="ID" />
+							<mx:DataGridColumn headerText="订单编码" dataField="Code" />
+							<mx:DataGridColumn headerText="金额" dataField="Total" />
+							<mx:DataGridColumn headerText="客户" dataField="Customer" />
+							<mx:DataGridColumn headerText="销售员" dataField="Register" />
+							<mx:DataGridColumn headerText="备注说明" dataField="Memo" />
+							<mx:DataGridColumn headerText="状态" dataField="State" />		    	
+						</mx:columns>
+					</mx:DataGrid>
+					<control:PagingBar  id="clientPagingBar1"  width="717" height="21">
+					</control:PagingBar>
+					
+				</mx:VBox>
+			</mx:Canvas>
+			
+			<mx:Label text="服务器端分页" />
+			<mx:Canvas backgroundColor="white">
+				<mx:VBox width="100%" height="100%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+					<mx:DataGrid id="DataGrid2" verticalScrollPolicy="on" horizontalScrollPolicy="off">
+						<mx:columns>
+							<mx:DataGridColumn headerText="订单ID" dataField="id" />
+							<mx:DataGridColumn headerText="订单编码" dataField="code" />
+							<mx:DataGridColumn headerText="金额" dataField="total" />
+							<mx:DataGridColumn headerText="客户" dataField="customer" />
+							<mx:DataGridColumn headerText="销售员" dataField="register" />
+							<mx:DataGridColumn headerText="备注说明" dataField="memo" />
+							<mx:DataGridColumn headerText="状态" dataField="state" />		    	
+						</mx:columns>
+					</mx:DataGrid>
+					<control:PagingBar id="clientPagingBar2" width="714" height="26">
+					</control:PagingBar>
+					
+				</mx:VBox>
+			</mx:Canvas>
+		</mx:VBox>
+		
+	</s:Application>

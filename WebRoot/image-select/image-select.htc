@@ -1,0 +1,484 @@
+﻿<public:component tagname="image-select" literalcontent="true">
+<public:method name="GetAllDataXML" internalname="f_GetAllDataXML" />
+<public:method name="setValue" internalname="f_SetValue" />
+<public:method name="setBgColor" internalname="f_SetBgColor" />
+<public:method name="clearData" internalname="f_ClearData" />
+<public:method name="clearAllData" internalname="f_ClearAllData" />
+
+
+
+<public:property name="dataXML" />
+<public:property name="disabled" />
+<public:property name="isPop" />
+
+<public:attach event="oncontentready" onevent="f_Init()" />
+<public:event name="onSelectChange" id="selectChange" />
+
+<SCRIPT LANGUAGE="JScript">
+var oPopup = null;        	//弹出的下拉面板
+var ComboBox = null;      	//模拟的下拉列表框
+var ComboBoxIpt = null;   	//下拉框
+var DropDown = null;       	//下拉按钮
+var DropList = null;       	//选项
+var aNodes = new Array();   //下拉框中的值
+var v_d_count  = 10;        //显示的记录条数
+
+//初始化HTC组件操作
+function f_Init() {
+	//初始化显示的记录条数
+	if (element.dispCount) {
+		v_d_count = parseInt(element.dispCount);
+		if (isNaN(v_d_count)) {
+			v_d_count = 10;
+		}
+	}
+	
+	element.disabled = element.tdisabled;
+	if (!element.width) element.width = 200;
+	ComboBox = f_PublicCreateComboBox();
+	ComboBoxIpt = f_PublicCreateComboBoxIpt();
+	element.value = "";
+	element.text = "";
+	ComboBoxIpt.innerText = "";	
+	aNodes = f_CreateNodes(element.innerHTML);
+	DropList = f_PublicCreateDropList();
+	f_PublicCreateDropListData(aNodes);
+	
+	DropDown = f_PublicCreateDropDown();
+	oPopup = f_PublicCreatePopup();
+	ComboBox.attachEvent("onmouseover",fnMouseover);
+	ComboBox.attachEvent("onmouseout",fnMouseout);
+	DropDown.attachEvent("onmousedown",fnMousedown);
+	ComboBoxIpt.attachEvent("onclick", fnMousedown);
+	element.onpropertychange = f_propertychange; 
+	element.type = "image-select";
+	window.document.attachEvent("onclick", chkstat);
+	f_setDisabled();
+}
+
+//HTC组件属性改变触发的事件
+function f_propertychange() {
+	switch(event.propertyName){
+		case 'dataXML':
+			f_addItems();
+			break;
+		case 'disabled':
+			f_setDisabled();
+			break;
+	}
+}
+
+//设置是否可编辑属性
+function f_setDisabled() {
+	if (element.disabled == "true") {
+		ComboBoxIpt.disabled = true;
+		DropDown.disabled = true;
+	} else {
+		ComboBoxIpt.disabled = false;
+		DropDown.disabled = false;
+	}
+}
+
+//向下拉列表框添加选项
+function f_addItems() {
+	element.value = "";
+	element.text = "";
+	ComboBoxIpt.innerText = "";
+	if (dataXML) {
+		var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
+		xmlDoc.loadXML(dataXML);
+		var rootNode = xmlDoc.documentElement;
+		//alert(rootNode.xml);
+		f_CreateXMLNodes(rootNode);
+		f_PublicCreateDropListData(aNodes);
+		
+		//判断选项的条数，当大于指定条数时出现滚动条
+		if (aNodes.length > v_d_count) {
+			oPopup.style.height = v_d_count * 17;
+			oPopup.style.overflow = "auto";
+		} else {
+			oPopup.style.overflow = "hidden";
+			oPopup.style.height = null;
+		}
+	}
+}
+
+//解析下行XML数据，将其解析成数组
+function f_CreateXMLNodes(doc) {
+	//处理下拉列表项，当传入的option为零时不处理
+	var list = doc.selectSingleNode("//data/list");
+	if (list)  {
+		var childNodes = list.childNodes;
+		var _nodes = new Array();
+		for (var i = 0; i < childNodes.length; i++) {
+			_nodes[i] = new Array(childNodes[i].text, childNodes[i].getAttribute("value"));
+		}
+		aNodes = _nodes;
+	}
+	
+	//处理选中项
+	var selected = doc.selectSingleNode("//data/selected/value");
+	if (selected) {
+		var ary = f_getDatasByValue(selected.text);
+		if (ary) {
+			element.value = ary[1];
+			element.text = ary[0];
+			ComboBoxIpt.innerText = ary[0];
+		}
+	}
+}
+
+function f_getDatasByValue(_val) {
+	for (var i = 0; i < aNodes.length; i++) {
+		if (aNodes[i][1] == _val)
+			return aNodes[i];
+	}
+	return null;
+}
+
+//创建下拉模拟的下拉列表框
+function f_PublicCreateComboBox() {
+	var oTable = window.document.createElement("TABLE");
+	oTable.cellSpacing = 1;
+	oTable.cellPadding = 0;
+	oTable.id = "AXTeamComboBox"+uniqueID;
+	oTable.style.display = "inline";
+	oTable.border = 0;
+	oTable.bgColor = "#000000"; 
+	element.insertAdjacentElement("BeforeBegin",oTable);
+	oTable.ComboBoxFocus = false; 
+	return oTable;
+}
+
+//下拉框
+function f_PublicCreateComboBoxIpt() {
+	var oDiv = window.document.createElement("DIV");
+	oDiv.className = "imageSelect_disp_div";
+	with(oDiv.style) {
+		width = element.width;
+		overflow = "hidden";
+	}
+	oDiv.id = "AXTeamComboBoxIpt" + uniqueID;
+	oDiv.attachEvent("onselectstart", fnCancel);
+	var cCell = ComboBox.insertRow().insertCell();
+	cCell.width = element.width;
+	cCell.appendChild(oDiv);
+	return oDiv;
+}
+
+//模拟的下拉按钮
+function f_PublicCreateDropDown() {
+	var oTable = window.document.createElement("TABLE");
+	oTable.cellSpacing = 0;
+	oTable.cellPadding = 0;
+	oTable.className = "imageSelect_dropDown_table";
+	oTable.id = "AXTeamDropDown"+uniqueID;
+	oTable.border = 0;
+	oTable.attachEvent("onselectstart", fnCancel);
+	var otd = oTable.insertRow().insertCell();
+	otd.style.cssText = "font-family: webdings;font-size:8px;text-align: center;width:13px;height:17px;";
+	otd.innerText = "6";
+	ComboBox.rows[0].insertCell().appendChild(oTable);
+	return oTable;
+}
+
+//模拟的列表项
+function f_PublicCreateDropList() {
+	var oTable = window.document.createElement("TABLE");
+	oTable.cellSpacing = 1;
+	oTable.cellPadding = 0;
+	oTable.className = "imageSelect_list_table";
+	oTable.attachEvent("onselectstart", fnCancel); 
+	return oTable;
+}
+
+//向列表框中添加数据
+function f_PublicCreateDropListData(aNodes) {
+	var otd = null;
+	var No=DropList.rows.length;
+    for(i=0;i<No;i++) DropList.deleteRow();
+    var oImg = window.document.createElement("IMG");
+    oImg.src = element.imgsrc;
+    oImg.align   = 'absmiddle';
+
+    var tmpImgHTML = "";
+    if (element.imgsrc)
+    	tmpImgHTML = oImg.outerHTML;
+	
+	
+	//添加nullOption的处理
+	//2006-02-20
+	if (element.nullOption && element.nullOption == 'true') {
+		otd = DropList.insertRow().insertCell();
+		otd.parentNode.className = "imageSelect_list_table_out";
+		otd.style.height = "12px";
+		otd.innerHTML = tmpImgHTML  +  "全选";   
+		otd.inner_value = "";  
+		otd.attachEvent("onmouseover",DropListOver);
+		otd.attachEvent("onmouseout",DropListOut);
+		otd.attachEvent("onclick",DropListClick);
+	}
+	
+	for(var i=0; i<aNodes.length; i++) {
+		otd = DropList.insertRow().insertCell();
+		otd.parentNode.className = "imageSelect_list_table_out";
+		otd.style.height = "12px";
+		otd.innerHTML = tmpImgHTML  +  aNodes[i][0];   
+		otd.inner_value = aNodes[i][1];  
+		otd.attachEvent("onmouseover",DropListOver);
+		otd.attachEvent("onmouseout",DropListOut);
+		otd.attachEvent("onclick",DropListClick);
+	}
+}
+
+//下拉框的SPAN容器
+function f_PublicCreatePopup() {
+	var oSpan = element.document.createElement("span");
+	oSpan.style.cssText = "position:absolute;display:none;cursor:default;z-index:100;";
+	oSpan.style.border = "1 #555555 solid";
+	if (aNodes.length > v_d_count) {
+		oSpan.style.height = v_d_count * 17;
+		oSpan.style.overflow = "auto";
+	}
+	element.parentNode.appendChild(oSpan);
+	return oSpan;
+}
+
+//设计时创建的列表项数据
+function f_CreateNodes(htmlText) {
+	var oSpan = element.document.createElement("span");
+	oSpan.innerHTML = htmlText;
+	var xNodes = oSpan.childNodes;
+	var Nodes = new Array();
+	var nNumNodes = (xNodes == null) ? 0 : xNodes.length;
+	var j = 0;
+	for (var nIndex = 0; nIndex < nNumNodes; nIndex++){
+		var node = xNodes[nIndex];
+		if (node != null) {
+			var tmp = f_CreateDropListItems(node);
+			if (tmp && tmp.length > 0)
+				Nodes[j++] = f_CreateDropListItems(node);
+		}
+	}
+	return Nodes;
+}
+
+function f_CreateDropListItems(oNode) {
+	var rNodes;
+	var szTagName = (oNode.tagName == null) ? "" : oNode.tagName.toLowerCase();
+	var oImg = window.document.createElement("IMG");
+	oImg.src = element.imgsrc;
+	oImg.align   = 'absmiddle';
+	var tmpImgHTML = "";
+	if (element.imgsrc)
+    		tmpImgHTML = oImg.outerHTML;
+	if(szTagName == "option") {
+		var szValue;
+		var szText = oNode.innerText;
+		if (oNode.value)
+		 	szValue = oNode.value;
+		else
+			szValue = szText;
+		if (oNode.selected == 'true') {
+			element.value = szValue;
+			element.text = szText;
+			ComboBoxIpt.innerHTML = tmpImgHTML+szText;
+		}
+		rNodes = new Array(szText, szValue);
+	}
+	else
+		rNodes = new Array();
+	return rNodes;
+}
+
+//鼠标移到列表选项上事件处理
+function fnMouseover() {
+	if(ComboBox.ComboBoxFocus) return;
+	overstat();
+}
+
+//鼠标离开列表选项上事件处理
+function fnMouseout() {
+	if(ComboBox.ComboBoxFocus) return;
+	defaultstat();
+}
+
+
+function fnMousedown(){
+	//alert('cc');
+	if(oPopup.style.display == '') {
+		oPopup.style.display = 'none';
+		DropDown.style.color = "#000000";
+		return;
+	}
+	DropDown.style.color = "#FFFFFF";
+
+	oPopup.appendChild(DropList);
+	oPopup.style.width = (oPopup.offsetWidth < ComboBox.offsetWidth) ? ComboBox.offsetWidth : oPopup.offsetWidth;
+	if(element.isPop == "true"){
+	oPopup.style.left = getPopx(ComboBox);
+	oPopup.style.top = getPopy(ComboBox)+19;	
+	}else{
+	oPopup.style.left = getx(ComboBox);
+	oPopup.style.top = gety(ComboBox)+19;	
+	}	
+	oPopup.style.display = '';
+	oPopup.children[0].width = "100%";
+	ComboBox.ComboBoxFocus = true;
+	
+	var tHeight = 0;
+	if (aNodes.length > v_d_count) 
+		tHeight = v_d_count * 17;
+	else 
+		tHeight = (aNodes.length * 17 +2);
+	
+	//判断下拉后是否超过高度，移动滚动条
+	var tPos = element.document.body.offsetHeight + element.document.body.scrollTop;  //页面位置加滚动条的位置
+	var tPos1 = tHeight + oPopup.style.pixelTop;
+	
+	if (tPos < tPos1) {
+		//element.document.body.scrollTop = element.document.body.scrollTop + 170;   //移动滚动条
+		oPopup.style.top = oPopup.style.pixelTop - 19 - tHeight;                   //改变下拉框位置
+	}
+}
+
+function overstat() {
+	ComboBox.bgColor="#0A246A";
+	DropDown.bgColor="#B6BDD2";
+	DropDown.style.color = "#000000";
+}
+
+function defaultstat() {
+	ComboBox.bgColor="#000000";
+	DropDown.bgColor="#DBD8D1";
+	DropDown.style.color = "#000000";
+}
+
+function DropListOver() {
+	obj = event.srcElement;
+	obj.className = "imageSelect_list_table_over";
+}
+
+function DropListOut() {
+	obj = event.srcElement;
+	obj.className = "imageSelect_list_table_out";
+}
+
+function DropListClick() {
+	var flag = false;
+	obj = event.srcElement;
+	while(obj.tagName.toLowerCase() != 'td')
+		obj = obj.parentNode;
+	//alert(obj.tagName);
+	//if (element.value != obj.inner_value) {
+		ComboBoxIpt.innerHTML = obj.innerHTML;
+		element.text = ComboBoxIpt.innerText;
+		element.value = obj.inner_value;
+		flag = true;
+	//}	
+	oPopup.style.display = "none";
+	DropDown.style.color = '#000000';
+	if (flag)  selectChange.fire();
+}
+
+function chkstat() {
+	var oEl = event.srcElement;
+
+	while( null != oEl && oEl != ComboBox) {
+		oEl = oEl.parentElement;
+	}
+	if(oEl == null) {
+		defaultstat();
+		ComboBox.ComboBoxFocus = false;
+		oPopup.style.display = "none";
+	}
+}
+
+function fnCancel() {
+	return false;
+}
+
+function getx(e) {
+	var l=e.offsetLeft;
+	while(e=e.offsetParent){
+		l+=e.offsetLeft;
+	}
+	return l;
+}
+
+function gety(e) {
+	var t=e.offsetTop;
+	while(e=e.offsetParent) {
+		t+=e.offsetTop;
+	}
+	return t;
+}
+
+function getPopx(e) {
+	var l=e.offsetLeft;
+	for(var i = 2;i>0;i--){
+	e=e.offsetParent;
+	l+=e.offsetLeft;
+	}
+	return l;
+}
+
+function getPopy(e) {
+	var t=e.offsetTop;
+	for(var i = 2;i>0;i--){
+	e=e.offsetParent;
+	t+=e.offsetTop;
+	}
+	return t;
+}
+
+//获取带图片的列表框中的选中的记录信息
+function f_GetAllDataXML() {
+	var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
+	var rootElement = xmlDoc.createElement("data");
+	rootElement.text = element.value;
+	return rootElement;
+}
+
+/***
+* 设置ImageSelect的选中值
+*/
+function f_SetValue(v) {
+	for (var i = 0; i < aNodes.length; i++) {
+		if (v == aNodes[i][1]) {
+			element.value = v;
+			element.text = aNodes[i][0];
+			ComboBoxIpt.innerText = aNodes[i][0];
+			return;
+		}
+	}
+	element.value = "";
+	element.text = "";
+	ComboBoxIpt.innerText = "";
+}
+/**
+*   设置背景色
+*/
+function f_SetBgColor(col) {
+	ComboBoxIpt.style.backgroundColor = col;
+}
+
+/**
+*   清除选中值
+*/
+function f_ClearData() {
+	element.value = "";
+	element.text = "";
+	ComboBoxIpt.innerText = "";	
+}
+
+/*
+*   清空下拉框的所有值
+*/
+function f_ClearAllData() {
+	this.dataXML = "<data><list/></data>";
+	f_addItems();
+}
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

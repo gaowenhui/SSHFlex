@@ -1,0 +1,91 @@
+package com.lewoo.action;
+
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.config.Result;
+import org.apache.struts2.config.Results;
+
+import com.lewoo.bean.Users;
+import com.lewoo.service.UsersService;
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ModelDriven;
+
+
+public class UsersAction extends ActionSupport implements ModelDriven<Users> {
+
+	private Users user = new Users();
+
+	public Users getUser() {
+		return user;
+	}
+	public void setUser(Users user) {
+		this.user = user;
+	}
+
+	public Users getModel() {
+		// TODO Auto-generated method stub
+		return user;
+	}
+	
+    //ע��service
+	private UsersService usersService;
+	public UsersService getUsersService() {
+		return usersService;
+	}
+	public void setUsersService(UsersService usersService) {
+		this.usersService = usersService;
+	}
+
+	/**
+	 * ע��
+	 */
+	public String reg() throws Exception {
+
+		usersService.add(user);
+			return "succ";
+		
+	}
+
+	/**
+	 * ��¼
+	 */
+	public String login() throws Exception {
+
+		
+		// ֱ�ӵ���service
+		boolean flag=usersService.login(user);
+		if(flag){
+		    return "succ";
+		}else 
+		{ 
+			HttpServletRequest request=ServletActionContext.getRequest();
+			request.setAttribute("loginError", "loginError");
+			return "fail";
+		}
+	}
+	
+	/**
+	 * ɾ��
+	 */
+	public String delete()throws Exception{
+		HttpServletRequest request=ServletActionContext.getRequest();
+		String userId=request.getParameter("userId");
+		usersService.delete(Integer.parseInt(userId));
+		return "succ";
+	}
+	
+
+	/**
+	 * �޸�
+	 */
+	public String update()throws Exception{
+		
+		usersService.update(user);
+		return "succ";
+	}
+	
+	
+}

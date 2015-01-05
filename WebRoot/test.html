@@ -1,0 +1,76 @@
+﻿<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<html>
+<head>
+<title>图片上传测试</title>
+<link href="../../resources/css/main.css" rel="stylesheet" type="text/css">
+<link rel="StyleSheet" href="../../resources/selecttable/select-table.css" type="text/css" />
+<link rel="StyleSheet" href="../../resources/image-select/image-select.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/editor-select/editor-select.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/edittable/edittable.css" type="text/css" />
+<link rel="StyleSheet" href="../../resources/edittable/editor-table.css" type="text/css" />
+<?XML:NAMESPACE PREFIX="mycontrol" ?>
+<?IMPORT NAMESPACE="mycontrol" IMPLEMENTATION="../../resources/selecttable/select-table.htc" ?>
+<?IMPORT NAMESPACE="mycontrol" IMPLEMENTATION="../../resources/image-select/image-select.htc" ?>
+<?IMPORT NAMESPACE="mycontrol" IMPLEMENTATION="../../resources/edittable/editor-table.htc" ?>
+<?IMPORT NAMESPACE="mycontrol" IMPLEMENTATION="../../resources/editor-select/editor-select.htc" ?>
+<script type="text/javascript" src="../../common_qc.js"></script>
+<script type="text/javascript" language="javascript">  
+var src;
+//http://localhost:8080/SSH2/imageUpLoad.jsp?czy=test&mkId=1&width=200&height=200&flage=select&imageId=1
+function cg(){
+	if(oc_czfs.value=="insert"){
+	tr_id.style.display="none";
+	}else{
+	tr_id.style.display="";
+	}
+}
+
+function getid(){
+	picidnew.value=if_pic.hid_imageId.value;
+}
+ 
+function getpic(){
+	if_pic.location.href="imageUpLoad.jsp?czy=test&mkId=1&width=320&height=240&flage="+oc_czfs.value+"&imageId="+picid.value;
+}
+</script> 
+</head>
+<body>
+<table>
+<tr>
+<td width="40%">操作方式：</td>
+<td width="40%">
+<select id="oc_czfs" name="oc_czfs"  onChange="cg()">
+<option value="insert">新增<option>
+<option value="update">修改<option>
+<option value="select">查询<option>
+</select>
+</td>
+<td width="20%">
+<input type="button" id="btn_getpic" name="btn_getpic" value="查询" onClick="getpic();" />
+</td>
+</tr>
+<tr id="tr_id" style="display:none">
+<td width="40%">图片id</td>
+<td width="40%">
+<input type="text" width="100%" name="picid" id="picid" />
+</td>
+<td width="20%">
+</td>
+</tr>
+<tr>
+<td colspan="3">
+<iframe id="if_pic" src="imageUpLoad.jsp?czy=test&mkId=1&width=360&height=240&flage=insert" style="width:480px; height:360px"></iframe>
+</td>
+</tr>
+<tr>
+<td width="40%">新的图片id</td>
+<td width="40%">
+<input type="text" width="100%" name="picidnew" id="picidnew" />
+</td>
+<td width="20%">
+<input type="button" id="btn_getid" name="btn_getid" value="获取" onClick="getid();" />
+</td>
+</tr>
+</table>
+</body>
+</html>

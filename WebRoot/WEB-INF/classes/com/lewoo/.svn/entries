@@ -1,0 +1,40 @@
+9
+
+dir
+28
+svn://localhost/repos/SSH2/src/com/hygj
+svn://localhost/repos
+
+
+
+2012-10-31T07:48:39.220467Z
+27
+test
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+91a251fd-3e4f-fa4c-b1ea-9ac9487bc4ba
+
+service
+dir
+
+dao
+dir
+
+bean
+dir
+
+action
+dir
+

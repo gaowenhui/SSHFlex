@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service" 
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+    
+     <destination id="findData" >
+     <properties>
+        <source>com.flex.FindGridData</source>
+     </properties>
+     </destination>
+     
+     <destination id="java2Flex">  
+        <properties>  
+            <source>com.test.ShowMe</source>  
+        </properties>  
+     </destination>
+     
+     <!--<destination id="userAction" >
+     <properties>
+        <source> com.lewoo.action.UsersAction</source>
+     </properties>
+     </destination>
+     
+    -->
+    <destination id="userAction">
+      <properties>
+        <factory>spring</factory>
+        <source>userAction</source>
+      </properties>
+    </destination>
+    
+    <destination id="usersService">
+      <properties>
+        <factory>spring</factory>
+        <source>usersService</source>
+      </properties>
+    </destination>
+
+</service>

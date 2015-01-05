@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
+	
+	<fx:Script>  
+		<![CDATA[  
+		import mx.rpc.events.ResultEvent;  
+		
+		public function call():void{  
+		var str:String = textArea.text;  
+		j.showout(str);  
+		
+		}  
+		
+		public function myHandler(event:ResultEvent):void{  
+		var newStr:String = event.result as String;  
+		textArea.text = newStr+"------";               
+		}  
+		]]>
+	</fx:Script>  
+	
+	<fx:Declarations>
+	<mx:RemoteObject destination="java2Flex" id="j"   
+					 endpoint="http://localhost:8089/SSH2/messagebroker/amf"  
+					 result="myHandler(event)"/>
+	</fx:Declarations>
+	<mx:TextArea x="191" y="245" id="textArea"/>  
+	<mx:Button x="236" y="332" label="通信" fontSize="14" id="btn" click="call()"/>  
+	
+</s:Application>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   minWidth="955" minHeight="600">
+	
+	
+	
+	<fx:Script>
+
+		
+		<![CDATA[
+			
+			import User;
+			import mx.controls.Alert;		
+			import mx.rpc.events.ResultEvent;
+			
+			protected function senddata():void //按确认按钮时	
+			{
+				// TODO Auto-generated method stub		
+				var name:String=this.txtusername.text;				
+				var psw :String=this.txtpassword.text;				
+				var user :User = new User();				
+				user.UName=name;				
+				user.UPwd=psw;	
+				Alert.show(name+" "+psw);
+				j.login2(name,psw);						
+			}
+			
+			protected function canceldata(event:MouseEvent):void //按取消按钮时
+				
+			{
+				// TODO Auto-generated method stub
+				this.txtusername.text="";	
+				this.txtpassword.text="";
+			}
+			
+			protected function myHandler(event:ResultEvent):void{  
+				var newStr:String = event.result as String;  
+				Alert.show(newStr);
+				if(newStr=="succ")
+				{
+					this.FirstCanvas.visible = false;
+				}else if(newStr=="fail")
+				{
+					Alert.show("用户名或密码错误！");
+					return;
+				}
+				//nametext.text = newStr+"------";       
+				//Alert.show(newStr,"登录标志");	
+			}  
+			
+			private function lucSubmit(event:KeyboardEvent):void{//发送结果
+				var keycode:int=event.keyCode;//键盘码
+				
+				if(keycode==13)
+				{	
+					Login(1);
+				}	
+			}
+			
+			private function Login(logintype:int):void
+			{
+				if(logintype==1)
+				{
+					var url:String;
+					var txtusername:String = this.txtusername.text;
+					var password:String = this.txtpassword.text;
+					if(txtusername=="")
+					{
+						Alert.show("请输入用户名！");
+						return;
+					}
+					if(password=="")
+					{
+						Alert.show("请输入密码！");
+						return;
+					}
+					//RemoteObect方式调用登录方法
+					senddata();
+				}else
+				{
+					//this.FirstCanvas.visible = false;
+					return;
+					//SetQX();  
+				}
+			}
+			
+		]]>
+		
+	</fx:Script>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+		<mx:RemoteObject id="j" destination="userAction"
+						 endpoint="http://localhost:8089/SSH2/messagebroker/amf"
+						 result="myHandler(event)"/>
+		
+		<mx:Iris id="irisOut" duration="1000" showTarget="true"/>
+		<mx:Iris id="irisIn" duration="1000" showTarget="false"/>
+		<mx:Fade id="fadeIn" alphaFrom="0.0" alphaTo="1.0"/> 
+		<mx:Fade id="fadeOut" alphaFrom="1.0" alphaTo="0.0"/> 
+	</fx:Declarations>
+	
+	<mx:Canvas id="FirstCanvas" visible="true" width="100%" height="100%" backgroundColor="#497193"
+			   borderColor="#B7BABC" hideEffect="{irisOut}" horizontalScrollPolicy="off"
+			   showEffect="{irisIn}" verticalScrollPolicy="off">
+		<mx:Image x="0" y="0" source="img/backpic.jpg"/>
+		<mx:Canvas id="LoginCanvas" x="256" y="117" width="899" height="325" backgroundAlpha="0.7"
+				   backgroundColor="#5F5F5A" borderStyle="none" cornerRadius="0"
+				   horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:Image x="0" y="0" width="899" height="76" source="img/login_r1_c1.jpg"/>
+			<mx:Image x="0" y="76" width="622" height="249" source="img/login_r2_c1.jpg"/>
+			<mx:Image x="622" y="76" width="277" height="249" source="img/login_r2_c2.jpg"/>
+			<mx:Canvas x="622" y="76" width="277" height="249" borderColor="#FFFFFF"
+					   borderStyle="solid">
+				<mx:Label x="25" y="17" fontSize="13" text="用户名"/> 
+				<mx:TextInput id="txtusername" x="85" y="15" keyUp="lucSubmit(event)"/>
+				<mx:Label x="25" y="52" fontSize="13" text="密码"/>
+				<mx:TextInput id="txtpassword" x="85" y="52" displayAsPassword="true"
+							  keyUp="lucSubmit(event)"/>
+				<mx:Button x="157" y="89" width="67" label="登陆" click="Login(1);" cornerRadius="6"
+						   fontSize="14"/>
+				
+			</mx:Canvas>
+		</mx:Canvas>
+	</mx:Canvas>
+	
+	
+	
+	
+</s:Application>

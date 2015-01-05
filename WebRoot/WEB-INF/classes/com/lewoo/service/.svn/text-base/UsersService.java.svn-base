@@ -1,0 +1,65 @@
+package com.lewoo.service;
+
+import java.util.List;
+
+import com.lewoo.bean.Users;
+import com.lewoo.dao.UsersDAO;
+
+public class UsersService {
+	private UsersDAO usersDAO;
+
+	public UsersDAO getUsersDAO() {
+		return usersDAO;
+	}
+
+	public void setUsersDAO(UsersDAO usersDAO) {
+		this.usersDAO = usersDAO;
+	}
+	
+	/**
+	 * ��½��֤
+	 */
+	public boolean login(Users userForm){
+		return usersDAO.login(userForm);
+	}
+	
+	/**
+	 * ����ȫ����Ϣ
+	 */
+	public List findAll(){
+		return usersDAO.findAll();
+	}
+	
+
+	/**
+	 * ���
+	 */
+	public void add(Users user){
+		usersDAO.add(user);
+	}
+	
+	/**
+	 * ��userId��ѯ
+	 * @param userId
+	 * @return
+	 */
+	public Users getById(int userId){
+		return usersDAO.getById(userId);
+	}
+	
+	/**
+	 * ɾ��
+	 */
+	public void delete(int userId){
+		usersDAO.delete(userId);
+	}
+	
+	/**
+	 * �޸�
+	 */
+	public void update(Users user){
+		usersDAO.update(user);
+	}
+	
+	
+}
